@@ -19,6 +19,11 @@ jobs:
     steps:
       - name: Fast-forward main from upstream
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN }}
           FORK_REPOSITORY: ${{ github.repository }}
-        run: gh repo sync "$FORK_REPOSITORY" --source OpenListTeam/OpenList-Worker --branch main
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Configure the UPSTREAM_SYNC_TOKEN repository secret with Contents and Workflows write permissions."
+            exit 1
+          fi
+          gh repo sync "$FORK_REPOSITORY" --source OpenListTeam/OpenList-Worker --branch main
